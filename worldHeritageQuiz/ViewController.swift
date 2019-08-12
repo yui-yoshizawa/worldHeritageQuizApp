@@ -21,8 +21,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var button4: UIButton!
     
     
-    
-    // 問題
+    // 結果の配列
+    var result: [String] = []
     
     // クイズの問題を管理する
     var currentQuestionNum: Int = 0
@@ -42,10 +42,34 @@ class ViewController: UIViewController {
     
     
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        showQuestion()    // 下で作成した、問題を表示する関数 showQuestion() を呼び出す
+    //   override func viewDidLoad() {
+    //       super.viewDidLoad()
+    //       showQuestion()    // 下で作成した、問題を表示する関数 showQuestion() を呼び出す
+    //   }
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // backボタンを「問題へ」に変更
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "問題へ", style: .plain, target: nil, action: nil)    // ここに突っ込む以外の場所わからんかった。
+        // カウント初期化
+        currentQuestionNum = 0
+        // リスト初期化
+        result = []
+        // 問題を表示する関数 showQuestion() 呼び出し
+        showQuestion()
     }
+    
+    
+    // segue遷移前動作
+    // セグエ実行前処理 / セグエの identifier 確認 / 遷移先ResultViewController の取得
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard segue.identifier == "ToResult", let vc = segue.destination as? ResultTableViewController else {
+            return
+        }
+        vc.result = result
+    }
+    
     
     // 問題を表示する関数
     func showQuestion() {
@@ -54,16 +78,16 @@ class ViewController: UIViewController {
         
         // タイトルを取り出す
         if let title = question["title"] as? String {
-            self.navigationItem.title = title
+            self.navigationItem.title = title    // これで画面一番上のタイトルが変わる。
         }
         
         // 問題を取り出す
         if let que = question["question"] as? String {
             // question Key の中身を Label に代入
-            questionTextView.text = que     // questionTextView に取得した問題を表示
+            questionTextView.text = que     // これで questionTextView に取得した問題が表示される。
         }
         
-        // 何択の問題か
+        // 何択の問題かによってボタンの表示数を変える処理
         if let choice = question["choice"] as? Int {
             if choice == 4 {
                 button1.isHidden = false
@@ -84,60 +108,30 @@ class ViewController: UIViewController {
                 button4.isHidden = true
             }
         }
-        
     }
     
     
     // 回答をチェックする関数
-    // 正解なら次の問題を表示する
     func checkAnswer(yourAnswer: Int) {
         // どの問題か取得する
         let question = questions[currentQuestionNum]    // question に questions[現在のインデックス番号] を代入
-        
+    
         // 問題の答えを取り出す
         if let ans = question["answer"] as? Int {    // ans に正解の番号を代入
             
             // 選択された答えと問題の答えを比較する
-            if yourAnswer == ans {    // yourAnswer は押したボタンの番号のこと。
+            if yourAnswer == ans {    // yourAnswer には押したボタンの番号が入る。
                 // 【正解のとき】
-                correctAlert()    // アラートを表示させる, ボタンタップで次の問題へ
+                correctAlert()
                 
-                // 最後の問題の時
-                if currentQuestionNum > questions.count {
-                    // 画面遷移する
-
-                }
-
             } else {
                 // 【不正解のとき】
-               incorrectAlert()
-  //
-    //            if currentQuestionNum >= questions.count {
-                    // 最後の問題の時
-                /*                 showAlert(message: "\(questions.count)問中\(result.count)問正解しました！")
-                    isHint = false    // ヒント復活
-                    currentQuestionNum = 0    // 問題番号リセット
-                } else {
-                    // 最後の問題ではない時
-                    showAlert(message: "不正解...")
-                }
+                incorrectAlert()
             }
-            
-        }else{
-            // エラーをわかりやすくする
-            print("答えが入ってません")
-            return
-                 }*/}
-            
         }
     }
     
     
-    
-    
-    
-    
-    // まだできてないよー
     // 正解のアラートを表示する関数
     func correctAlert() {
         // アラートの作成
@@ -145,8 +139,24 @@ class ViewController: UIViewController {
         // アラートのアクション（ボタン部分の定義）
         let ok = UIAlertAction(title: "OK", style: .cancel, handler: {
             (action: UIAlertAction!) in
+            // 【OKボタンを押したら】
+            // インデックス番号を +1 する
             self.currentQuestionNum += 1
-            self.showQuestion()    // きたーーーーーーーーーーーーーー！！！！！！！！！ こいつここに入れれば次の問題に行ってくれる！！！泣
+            
+            // 結果リスト追加
+            let num = self.currentQuestionNum
+            self.result.append("第\(num)問：○")
+            
+            if self.currentQuestionNum >= self.questions.count {
+                // 最後の問題の時
+                // 画面遷移する
+                self.performSegue(withIdentifier: "ToResult", sender: nil)
+                
+            } else {
+                // 最後の問題ではないとき
+                // 次の問題を表示する
+                self.showQuestion()
+            }
         })
         // 作成した alert にOKボタンを追加
         alert.addAction(ok)
@@ -162,12 +172,28 @@ class ViewController: UIViewController {
         // アラートのアクション（ボタン部分の定義）
         let ok = UIAlertAction(title: "OK", style: .default, handler: {    // style を .cancel にすると壊れる。
             (action: UIAlertAction!) in
+            // 【OKボタンを押したら】
+            // インデックス番号を +1
             self.currentQuestionNum += 1
-            self.showQuestion()
+            
+            // 結果リスト追加
+            let num = self.currentQuestionNum
+            self.result.append("第\(num)問：✗")
+            
+            if self.currentQuestionNum >= self.questions.count {
+                // 最後の問題のとき
+                // 画面遷移する
+                self.performSegue(withIdentifier: "ToResult", sender: nil)
+                
+            } else {
+                // 最後の問題ではないとき
+                self.showQuestion()
+            }
         })
-        let turn = UIAlertAction(title: "もういちど", style: .default, handler: nil)
+        let turn = UIAlertAction(title: "もういちど", style: .default, handler: nil)    // 「もういちど」を選択した時は何もしない
+        
         // 作成した alert にボタンを追加
-        // ボタンはaddした順番に左から表示される！！
+        // （ボタンはaddした順番に左から表示される！！）
         alert.addAction(turn)
         alert.addAction(ok)
         
@@ -176,27 +202,20 @@ class ViewController: UIViewController {
     }
     
     
-    
-    
-    
     @IBAction func button1(_ sender: Any) {
         checkAnswer(yourAnswer: 1)
     }
-    
     
     @IBAction func button2(_ sender: Any) {
         checkAnswer(yourAnswer: 2)
     }
     
-    
     @IBAction func button3(_ sender: Any) {
         checkAnswer(yourAnswer: 3)
     }
     
-    
     @IBAction func button4(_ sender: Any) {
         checkAnswer(yourAnswer: 4)
     }
-    
 }
 
