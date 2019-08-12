@@ -11,7 +11,17 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var questionTextView: UITextView!
-
+    
+    @IBOutlet weak var button1: UIButton!
+    
+    @IBOutlet weak var button2: UIButton!
+    
+    @IBOutlet weak var button3: UIButton!
+    
+    @IBOutlet weak var button4: UIButton!
+    
+    
+    
     // 問題
     
     // クイズの問題を管理する
@@ -19,14 +29,14 @@ class ViewController: UIViewController {
     
     // 問題を管理
     let questions: [[String: Any]] = [
-        ["question": "日本の世界遺産『富士山－信仰の対象と芸術の源泉』は、2013年に（ ）として世界遺産登録されました。\n1. 文化遺産 \n2. 自然遺産 \n3. 山岳遺産 \n4. 伝統遺産",
-         "answer": 1
+        ["title": "第1問", "question": "日本の世界遺産『富士山－信仰の対象と芸術の源泉』は、2013年に（ ）として世界遺産登録されました。\n\n1. 文化遺産\n2. 自然遺産\n3. 山岳遺産\n4. 伝統遺産",
+         "answer": 1, "choice": 4
         ],
-        ["question": "イタリア共和国の世界遺産『フィレンツェの歴史地区』のあるフィレンツェを中心に、17世紀に栄えた芸術運動は何でしょうか。\n1. シュルレアリスム \n2. アバンギャルド \n3. ルネサンス",
-         "answer": 3
+        ["title": "第2問", "question": "イタリア共和国の世界遺産『フィレンツェの歴史地区』のあるフィレンツェを中心に、17世紀に栄えた芸術運動は何でしょうか。\n\n1. シュルレアリスム \n2. アバンギャルド \n3. ルネサンス",
+         "answer": 3, "choice": 3
         ],
-        ["question": "2016年のオリンピック開催地であるリオ・デ・ジャネイロで、ブラジル独立100周年を記念して作られたキリスト像が立つ場所として、正しいものはどれか。\n1. コパカバーナの山 \n2. コルコバードの丘",
-         "answer": 2
+        ["title": "第3問", "question": "2016年のオリンピック開催地であるリオ・デ・ジャネイロで、ブラジル独立100周年を記念して作られたキリスト像が立つ場所として、正しいものはどれか。\n\n1. コパカバーナの山 \n2. コルコバードの丘",
+         "answer": 2, "choice": 2
         ],
     ]
     
@@ -42,11 +52,39 @@ class ViewController: UIViewController {
         // currentQuestionNum(問題番号)の問題を取得
         let question = questions[currentQuestionNum]    // question に questions[現在のインデックス番号] を代入
         
-        //問題(辞書型)から Key を指定して内容を取得
+        // タイトルを取り出す
+        if let title = question["title"] as? String {
+            self.navigationItem.title = title
+        }
+        
+        // 問題を取り出す
         if let que = question["question"] as? String {
             // question Key の中身を Label に代入
-            questionTextView.text = que    // questionTextView に取得した問題を表示
+            questionTextView.text = que     // questionTextView に取得した問題を表示
         }
+        
+        // 何択の問題か
+        if let choice = question["choice"] as? Int {
+            if choice == 4 {
+                button1.isHidden = false
+                button2.isHidden = false
+                button3.isHidden = false
+                button4.isHidden = false
+                
+            } else if choice == 3 {
+                button1.isHidden = false
+                button2.isHidden = false
+                button3.isHidden = false
+                button4.isHidden = true
+                
+            } else if choice == 2 {
+                button1.isHidden = false
+                button2.isHidden = false
+                button3.isHidden = true
+                button4.isHidden = true
+            }
+        }
+        
     }
     
     
