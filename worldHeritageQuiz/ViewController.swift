@@ -72,7 +72,7 @@ class ViewController: UIViewController {
 
             } else {
                 // 【不正解のとき】
-//                currentQuestionNum += 1
+               incorrectAlert()
   //
     //            if currentQuestionNum >= questions.count {
                     // 最後の問題の時
@@ -122,11 +122,17 @@ class ViewController: UIViewController {
         // アラートの作成
         let alert = UIAlertController(title: "不正解", message: "次に進みますか？", preferredStyle: .alert)
         // アラートのアクション（ボタン部分の定義）
-        let ok = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-        let turn = UIAlertAction(title: "もういちど", style: .cancel, handler: nil)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: {    // style を .cancel にすると壊れる。
+            (action: UIAlertAction!) in
+            self.currentQuestionNum += 1
+            self.showQuestion()
+        })
+        let turn = UIAlertAction(title: "もういちど", style: .default, handler: nil)
         // 作成した alert にボタンを追加
-        alert.addAction(ok)
+        // ボタンはaddした順番に左から表示される！！
         alert.addAction(turn)
+        alert.addAction(ok)
+        
         // アラートを表示する
         present(alert, animated: true, completion: nil)
     }
@@ -141,14 +147,17 @@ class ViewController: UIViewController {
     
     
     @IBAction func button2(_ sender: Any) {
+        checkAnswer(yourAnswer: 2)
     }
     
     
     @IBAction func button3(_ sender: Any) {
+        checkAnswer(yourAnswer: 3)
     }
     
     
     @IBAction func button4(_ sender: Any) {
+        checkAnswer(yourAnswer: 4)
     }
     
 }
