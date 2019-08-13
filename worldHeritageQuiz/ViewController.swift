@@ -51,7 +51,7 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // backボタンを「問題へ」に変更
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "問題へ", style: .plain, target: nil, action: nil)    // ここに突っ込む以外の場所わからんかった。
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "問題へ", style: .plain, target: nil, action: nil)
         // カウント初期化
         currentQuestionNum = 0
         // リスト初期化
@@ -77,7 +77,7 @@ class ViewController: UIViewController {
         let question = questions[currentQuestionNum]    // question に questions[現在のインデックス番号] を代入
         
         // タイトルを取り出す
-        if let title = question["title"] as? String {
+        if let title = question["title"] as? String {    // question が Any型だから as? でダウンキャスト？
             self.navigationItem.title = title    // これで画面一番上のタイトルが変わる。
         }
         
@@ -141,7 +141,7 @@ class ViewController: UIViewController {
             (action: UIAlertAction!) in
             // 【OKボタンを押したら】
             // インデックス番号を +1 する
-            self.currentQuestionNum += 1
+            self.currentQuestionNum += 1    // self つけないと怒られる
             
             // 結果リスト追加
             let num = self.currentQuestionNum
@@ -218,4 +218,3 @@ class ViewController: UIViewController {
         checkAnswer(yourAnswer: 4)
     }
 }
-
