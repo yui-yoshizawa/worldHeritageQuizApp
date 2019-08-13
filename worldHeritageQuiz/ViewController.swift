@@ -41,11 +41,10 @@ class ViewController: UIViewController {
     ]
     
     
-    
-    //   override func viewDidLoad() {
-    //       super.viewDidLoad()
-    //       showQuestion()    // 下で作成した、問題を表示する関数 showQuestion() を呼び出す
-    //   }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        showQuestion()    // 下で作成した、問題を表示する関数 showQuestion() を呼び出す
+    }
     
     
     override func viewWillAppear(_ animated: Bool) {
